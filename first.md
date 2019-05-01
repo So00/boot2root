@@ -145,3 +145,5 @@ PHASE_5
 
 PHASE_6
 
+We have 6 numbers, a first while check if they are <= 6 and no two times the same.
+There is operation after and we have to figure out the same, so we brute force it with a php script
