@@ -10,7 +10,7 @@ for ($first = 1; $first <= 6; $first++) {
                                 if ($fifth != $fourth && $fifth != $third && $fifth != $second && $fifth != $first)
                                     for ($sixth = 1; $sixth <= 6; $sixth++) {
                                         if ($sixth != $fifth && $sixth != $fourth && $sixth != $third && $sixth != $second && $sixth != $first) {
-                                            file_put_contents("san_goku", "Public speaking is very easy.\n1 2 6 24 120 720\n0 q 777\n9\nopekmq\n$first $second $third $fourth     $fifth $sixth\n");
+                                            file_put_contents("san_goku", "Public speaking is very easy.\n1 2 6 24 120 720\n0 q 777\n9\nopekmq\n$first $second $third $fourth $fifth $sixth\n");
                                             exec("./bomb san_goku", $ret);
                                             if ($ret[count($ret) - 1] != "The bomb has blown up.")
                                                 echo "$first $second $third $fourth $fifth $sixth\n";

