@@ -1,1 +1,10 @@
 We connect as Zaz : (cf first.md)
+
+We use the method here from exploit-db, https://www.exploit-db.com/exploits/40839
+It creates a new user called firefart but we changed it so the user is root, you compile it
+gcc -pthread dirty.c -o dirty -lcrypt
+
+you choose the password, you do
+    su root
+and type the password
+AND VOILA

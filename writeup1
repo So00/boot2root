@@ -149,12 +149,36 @@ PHASE_6
 We have 6 numbers, a first while check if they are <= 6 and no two times the same.
 There is operation after and we have to figure out the same, so we brute force it with a php script
 
+p *0xbffff6f0 = first value
+p *0xBFFFF6F4 = second value
+p *0xBFFFF6F8 = third value
+p *0xBFFFF6FC = fourth value
+p *0xBFFFF700 = fifth value
+p *0xBFFFF704 = sixth value
+
 The 6 numbers are : 
 4 2 6 3 1 5
 
 SECRET_PHASE
 
 There is a secret phase, we can solve it but it doesn't give anything. (cf : phase_defused to access secret phase)
+
+set breakpoints à
+    b *0x08049556 << debut de phase_defused
+    b *0x08048f1d << debut de first call fun7
+    b *0x08048ea0 << debut de fun7
+
+set eax à 2 pour le if
+    set $eax = 2
+
+set ebx à austinpowers
+    set {char[13]} $ebx = "austinpowers"
+
+Number to enter is 1001 (0x3E9)
+	0x08048f05 <+29>:	lea    -0x1(%ebx),%eax
+    0x08048f08 <+32>:	cmp    $0x3e8,%eax
+
+PASSWORD THOR_MACHINE
 
 As said on the forum of 42 https://forum.intra.42.fr/topics/17158/messages/1#81289 there is an error and we have to swictch number of the last script :
 Publicspeakingisveryeasy.126241207201b2149opekmq426135
