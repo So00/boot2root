@@ -1,0 +1,9 @@
+Start Virtual Machine
+
+During lauch, press 'Shift' until you enter grub rescue mode
+
+Enter command `live init=/bin/sh`
+
+Here you are ! Try `whoami`
+
+(This method can be used if you forgot your root password)
